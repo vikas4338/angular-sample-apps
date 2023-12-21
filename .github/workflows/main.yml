@@ -1,0 +1,45 @@
+name: Node js app build workflow
+
+on:
+      push:
+            branches: [ main ]
+      pull_request:
+            branches: [ main ]
+
+jobs:
+      build:
+            runs-on: ubuntu-latest
+            strategy:
+              matrix:
+                    node-versions: [16.x, 18.x]
+            steps:
+                - uses: actions/checkout@v2
+                - name: npm install and build
+                  run:
+                    npm install
+                    npm build
+                - uses: actions/upload-artifact@v2
+                  with:
+                    name: deploy_dist
+                    path: dist
+      test:
+            runs-on: ubuntu-latest
+            needs: build
+            strategy:
+                  matrix:
+                        node-versions: [16.x, 18.x]
+            steps:
+            - uses: actions/checkout@v2
+            - uses: actions/download-artifact@v2
+              with:
+                  name: deploy_dist
+            - name: Use Node.js ${{matrix.node-versions}}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{matrix.node-versions}}
+            - name: npm install and test
+              run:
+                npm install
+                npm test
+            env:
+              CI: true
