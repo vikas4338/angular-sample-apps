@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Employee } from './model/employee';
+import { EmployeeService } from './employee.service';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,10 @@ export class AppComponent implements OnInit {
   employeeForm: FormGroup;
   employees: Employee[] = [];
   ngOnInit(): void {
-
+    this.getEmployees();
   }
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private empService: EmployeeService) {
     this.employeeForm = this.fb.group({
       'id': new FormControl('', Validators.required),
       'name': new FormControl('', Validators.required),
@@ -23,14 +24,18 @@ export class AppComponent implements OnInit {
   }
 
   onSubmit(){
-    this.employees.push(new Employee(
-      this.employeeForm.value['id'],
-      this.employeeForm.value['name'],
-      this.employeeForm.value['age']
-    ));
+    let employeeInfo = new Employee(this.employeeForm.value['id'], this.employeeForm.value['name'], this.employeeForm.value['age']);
+    console.log(employeeInfo);
+    this.empService.save(employeeInfo).subscribe(()=>{
+      this.getEmployees();
+    });
 
     this.employeeForm.reset();
+  }
 
-    console.log(this.employees);
+  getEmployees(){
+    this.empService.getAll().subscribe((response)=>{
+      this.employees = response;
+    });
   }
 }

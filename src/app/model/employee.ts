@@ -1,11 +1,12 @@
 export class Employee {
-    id: number;
-    name: string;
-    age: number;
+    Id: number;
+    Name: string;
+    Age: number;
+    JoiningDate: string = ""
 
     constructor(id: number, name: string, age: number) {
-      this.id = id;
-      this.name = name;
-      this.age = age;
+      this.Id = id;
+      this.Name = name;
+      this.Age = age;
     }
 }

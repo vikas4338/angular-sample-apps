@@ -1,32 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Employee } from './model/employee';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
-  private url = '';
+  private url = 'https://78trnx3o9b.execute-api.us-east-1.amazonaws.com/EmployeeApi';
 
   constructor(private http: HttpClient)  {
 
   }
 
-  save(employee: Employee){
+  save(employee: Employee) : Observable<any> {
     let headers = new HttpHeaders();
-    headers = headers.set('Content-Type', 'application/json');
+    headers.set('Content-Type', 'application/json');
+    headers.set('Access-Control-Allow-Origin', '*');
 
-    this.http.post(this.url, employee, { headers: headers }).subscribe((response)=> {
-        console.log('Successfully saved to db');
-    });
+    return this.http.post(this.url + "/save", employee, { headers: headers });
   }
 
-  getAll(): Employee[] {
+  getAll(): Observable<Employee[]> {
     let employees: Employee[] = [];
-    this.http.get<Employee[]>(this.url).subscribe((response)=> {
-        employees = response;
-    });
-
-    return employees;
+    return this.http.get<Employee[]>(this.url + "/getAll");
   }
 }
